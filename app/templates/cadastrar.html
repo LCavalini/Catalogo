@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}
+    Cadastrar Produtos
+{% endblock %}
+{% block conteudo %}
+    <form action="/cadastrar/novo" method="POST">
+        <input name="nome" type="text">
+        <br>
+        <button type="submit">Cadastrar</button>
+    </form>
+{% endblock %}
