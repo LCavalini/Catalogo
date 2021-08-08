@@ -34,7 +34,13 @@ venv\Scripts\activate
 ```
 pip install -r requirements.txt
 ```
-6. Execute o servidor:
+6. Configure o banco de dados:
+```
+flask db init
+flask db migrate
+flask db upgrade
+``` 
+7. Execute o servidor:
 ```
 flask run
 ```
