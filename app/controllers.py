@@ -2,7 +2,6 @@ from app import app, db
 import logging
 from flask import render_template, redirect, request
 from app.models import Produtos, ImagensProdutos
-from app.especificacoes import get_especificacoes
 
 @app.route('/')
 def index():
@@ -29,7 +28,7 @@ def produto(produto_id):
     preco = f'R$ {resultado.preco}'
     quantidade = resultado.quantidade
     tipo = resultado.type
-    especificacoes = get_especificacoes(resultado, tipo)
+    especificacoes = resultado.especificacoes
     imagens = []
     if resultado.imagens:
         imagens = [f'static/imagens/{imagem.caminho}' for imagem in resultado.imagens]

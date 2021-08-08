@@ -13,7 +13,7 @@
         {% for campo, valor in especificacoes.items() %}
         <tr>
             <td width="30%">{{ campo }}</td>
-            <td>{{ valor }}</td>
+            <td>{{ valor | safe }}</td>
         </tr>
         {% endfor %}
     </table>

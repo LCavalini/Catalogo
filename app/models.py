@@ -18,6 +18,14 @@ class Produtos(db.Model):
     }
     imagens = relationship('ImagensProdutos')
 
+    @property
+    def especificacoes(self):
+        return {
+            'Marca:': self.marca,
+            'Modelo:' : self.modelo,
+            'Garantia:': f'{self.garantia} meses'
+        }
+
 
 class Processadores(Produtos):
     __tablename__ = 'processadores'
@@ -35,7 +43,23 @@ class Processadores(Produtos):
         'polymorphic_identity': 'processadores',
     }
 
-
+    @property
+    def especificacoes(self):
+        return {
+            'Marca:': self.marca,
+            'Modelo:' : self.modelo,
+            'Garantia:': f'{self.garantia} meses',
+            'Núcleos:' : self.nucleos,
+            'Threads:' : self.threads,
+            'Frequência base:' : f'{self.frequencia_base/1000:.1f} GHz',
+            'Frequência turbo:': f'{self.frequencia_turbo/1000:.1f} GHz',
+            'TDP:' : f'{self.tdp} W',
+            'Soquete:' : self.soquete,
+            'Litografia:' : self.litografia,
+            'Tecnologias:' : self.tecnologias.decode('utf-8'),
+            'Vídeo integrado:' : self.video
+        }
+    
 class HDs(Produtos):
     __tablename__ = 'hds'
     id = db.Column(db.Integer, db.ForeignKey('produtos.id'), primary_key=True)
@@ -47,6 +71,21 @@ class HDs(Produtos):
     __mapper_args__ = {
         'polymorphic_identity': 'hds',
     }
+
+    @property
+    def especificacoes(self):
+        unidade_capacidade = 'TB' if self.capacidade >= 1024 else 'GB'
+        capacidade = self.capacidade / 1024 if self.capacidade >= 1024 else self.capacidade
+        return {
+            'Marca:': self.marca,
+            'Modelo:' : self.modelo,
+            'Garantia:': f'{self.garantia} meses',
+            'Capacidade:' : f'{capacidade} {unidade_capacidade}',
+            'Interface:' : self.interface,
+            'RPM:' : self.rpm,
+            'Formato:' : f'{self.formato / 10:.1f}"',
+            'Cache:' : f'{self.cache} MB'
+        }
 
 
 class ImagensProdutos(db.Model):
