@@ -56,7 +56,7 @@ class Processadores(Produtos):
             'TDP:' : f'{self.tdp} W',
             'Soquete:' : self.soquete,
             'Litografia:' : self.litografia,
-            'Tecnologias:' : self.tecnologias.decode('utf-8'),
+            'Tecnologias:' : self.tecnologias.decode('utf-8').split('\n'),
             'Vídeo integrado:' : self.video
         }
     

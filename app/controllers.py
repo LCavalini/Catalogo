@@ -1,7 +1,18 @@
 from app import app, db
 import logging
 from flask import render_template, redirect, request
-from app.models import Produtos, ImagensProdutos
+from app.models import Processadores, Produtos, ImagensProdutos, HDs
+from app.forms import ProcessadoresForm, HDsForm
+
+forms = {
+    'processadores': ProcessadoresForm,
+    'hds': HDsForm
+}
+
+produtos = {
+    'processadores': Processadores,
+    'hds': HDs
+}
 
 @app.route('/')
 def index():
@@ -33,24 +44,73 @@ def produto(produto_id):
     if resultado.imagens:
         imagens = [f'static/imagens/{imagem.caminho}' for imagem in resultado.imagens]
     return render_template('produto.html', nome=nome, preco=preco, quantidade=quantidade,
-                            especificacoes=especificacoes, imagens=imagens, tipo=tipo)
+                            especificacoes=especificacoes, imagens=imagens, tipo=tipo, id=id)
 
 
-@app.route('/cadastrar')
+@app.route('/admin/cadastrar/', methods=['GET', 'POST'])
 def cadastrar():
-    return render_template('cadastrar.html')
+    if request.method == 'GET':
+        if 'tipo' in request.args:
+            tipo = request.args['tipo']
+            if tipo in forms:
+                form = forms[tipo]()
+                return render_template('cadastrar.html', form=form, tipo=tipo, acao='cadastrar')
+    if request.method == 'POST':
+        if 'tipo' in request.form:
+            tipo = request.form['tipo']
+            if tipo in produtos:
+                dados = {chave: valor for chave, valor in request.form.items() 
+                        if chave not in ('enviar', 'tipo', 'csrf_token')}
+                if 'tecnologias' in dados:
+                    dados['tecnologias'] = dados['tecnologias'].encode()
+                novo_produto = produtos[tipo](**dados)
+                db.session.add(novo_produto)
+                db.session.commit()
+    return redirect('/')
 
-@app.route('/cadastrar/novo')
-def cadastrar_novo_produto():
-    """
-    nome_produto = request.args.get('nome')
-    if nome_produto:
-        novo_produto = Produto(nome=nome_produto)
-        try:
-            db.session.add(novo_produto)
+@app.route('/admin/editar/<id>', methods=['GET', 'POST'])
+def editar(id):
+    try:
+        produto_id = int(id)
+    except:
+        return redirect('/')
+    if request.method == 'GET':
+        produto = Produtos.query.join(ImagensProdutos, isouter=True).filter(
+            Produtos.id == id
+        ).first()
+        if produto:
+            tipo = produto.type
+            if tipo in forms:
+                form = forms[tipo](obj=produto)
+                if hasattr(form, 'tecnologias'):
+                    if form.tecnologias.data:
+                        form.tecnologias.data = form.tecnologias.data.decode('utf-8')
+                return render_template('cadastrar.html', form=form, tipo=tipo, acao='editar', id=produto_id)
+    if request.method == 'POST':
+        produto = Produtos.query.filter(
+            Produtos.id == produto_id
+        ).first()
+        if produto:
+            dados = {chave: valor for chave, valor in request.form.items() 
+                    if chave not in ('enviar', 'tipo', 'csrf_token')}
+            if 'tecnologias' in dados:
+                dados['tecnologias'] = dados['tecnologias'].encode()
+            for coluna, valor in dados.items():
+                setattr(produto, coluna, valor)
             db.session.commit()
-            print(f'{nome_produto} cadastrado com sucesso')
-        except Exception:
-            print(f'Erro: {nome_produto} não foi cadastrado')
-    """
-    return redirect('/cadastrar')
+    return redirect('/')
+
+
+@app.route('/admin/remover/<id>')
+def remover(id):
+    try:
+        produto_id = int(id)
+    except:
+        return redirect('/')
+    produto = Produtos.query.filter(
+        Produtos.id == produto_id
+    ).first()
+    if produto:
+        db.session.delete(produto)
+        db.session.commit()
+    return redirect('/')    

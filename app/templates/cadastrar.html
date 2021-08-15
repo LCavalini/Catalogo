@@ -3,9 +3,36 @@
     Cadastrar Produtos
 {% endblock %}
 {% block conteudo %}
-    <form action="/cadastrar/novo" method="GET">
-        <input name="nome" type="text">
-        <br>
-        <button type="submit">Cadastrar</button>
-    </form>
+{% if acao == 'cadastrar' %}
+    <form action="/admin/{{ acao }}/" method="POST">
+{% endif %}
+{% if acao == 'editar' %}
+    <form action="/admin/{{ acao }}/{{ id }}" method="POST">
+{% endif %}
+    {{ form.hidden_tag() }}
+    {% for campo in form._fields.values() %}
+        {% if campo.type == 'StringField' %}
+            <div style="width: 100%; overflow: hidden; padding-top: 5px;">
+                <div style="width: 200px; float: left">
+                    {{ campo.label }}
+                </div>
+                <div>
+                    {{ campo(class='campo_string_padrao') }}
+                </div>
+            </div>
+        {% endif %}
+        {% if campo.type == 'TextAreaField' %}
+            <div style="width: 100%; overflow: hidden; padding-top: 5px;">
+                <div style="width: 200px; float: left">
+                    {{ campo.label }}
+                </div>
+                <div>
+                    {{ campo }}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    {{ form.enviar }}
+    <input type="hidden" name="tipo" value="{{ tipo }}">
+</form>
 {% endblock %}

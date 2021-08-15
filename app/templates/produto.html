@@ -4,6 +4,8 @@
 {% endblock %}
 {% block conteudo %}
     <h1>{{ nome }}</h1>
+    <a href="/admin/editar/{{ id }}">Editar</a> |
+    <a href="/admin/remover/{{ id }}">Remover</a>
     {% for imagem in imagens %}
         <img src="{{ imagem }}" width=200>
     {% endfor %}
@@ -13,7 +15,15 @@
         {% for campo, valor in especificacoes.items() %}
         <tr>
             <td width="30%">{{ campo }}</td>
-            <td>{{ valor | safe }}</td>
+            <td>
+                {% if campo == 'Tecnologias:' %}
+                    {% for v in valor %}    
+                        {{ v }}<br>
+                    {% endfor %}
+                {% else %}
+                    {{ valor }}
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>
