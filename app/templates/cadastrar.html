@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block titulo %}
+{% block title %}
     Cadastrar Produtos
 {% endblock %}
-{% block conteudo %}
+{% block content %}
 {% if acao == 'cadastrar' %}
     <form action="/admin/{{ acao }}/" method="POST">
 {% endif %}

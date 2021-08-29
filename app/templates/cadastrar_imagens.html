@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}
+Cadastrar imagens
+{% endblock %}
+{% block content %}
+{% for i in range(imagens|length) %}
+    <p>Imagem {{ i + 1 }}:</p>
+    {% if imagens[i] %}
+        <img src="{{ url_for('index') }}static/imagens/{{ imagens[i] }}" width="100px">
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data" action="/upload">
+        <input type="hidden" name="imagem_num" value="{{ i }}">
+        <input type="hidden" name="produto_id" value="{{ id }}">
+        <input type="hidden" name="nome_imagem", value="{{ nome_imagem }}">
+        <input type="file" name="arquivo">
+        <input type="submit" value="Enviar">
+    </form>
+    <form method="GET" action="/">
+        <input type="submit" value="Finalizar">
+    </form>
+{% endfor %}
+{% endblock %}

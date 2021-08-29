@@ -1,5 +1,8 @@
 from sqlalchemy.orm import relationship
-from app import db
+from app import db, login
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+
 
 class Produtos(db.Model):
     __tablename__ = 'produtos'
@@ -22,7 +25,7 @@ class Produtos(db.Model):
     def especificacoes(self):
         return {
             'Marca:': self.marca,
-            'Modelo:' : self.modelo,
+            'Modelo:': self.modelo,
             'Garantia:': f'{self.garantia} meses'
         }
 
@@ -47,19 +50,20 @@ class Processadores(Produtos):
     def especificacoes(self):
         return {
             'Marca:': self.marca,
-            'Modelo:' : self.modelo,
+            'Modelo:': self.modelo,
             'Garantia:': f'{self.garantia} meses',
-            'Núcleos:' : self.nucleos,
-            'Threads:' : self.threads,
-            'Frequência base:' : f'{self.frequencia_base/1000:.1f} GHz',
+            'Núcleos:': self.nucleos,
+            'Threads:': self.threads,
+            'Frequência base:': f'{self.frequencia_base/1000:.1f} GHz',
             'Frequência turbo:': f'{self.frequencia_turbo/1000:.1f} GHz',
-            'TDP:' : f'{self.tdp} W',
-            'Soquete:' : self.soquete,
-            'Litografia:' : self.litografia,
-            'Tecnologias:' : self.tecnologias.decode('utf-8').split('\n'),
-            'Vídeo integrado:' : self.video
+            'TDP:': f'{self.tdp} W',
+            'Soquete:': self.soquete,
+            'Litografia:': self.litografia,
+            'Tecnologias:': self.tecnologias.decode('utf-8').split('\n'),
+            'Vídeo integrado:': self.video
         }
-    
+
+
 class HDs(Produtos):
     __tablename__ = 'hds'
     id = db.Column(db.Integer, db.ForeignKey('produtos.id'), primary_key=True)
@@ -78,13 +82,13 @@ class HDs(Produtos):
         capacidade = self.capacidade / 1024 if self.capacidade >= 1024 else self.capacidade
         return {
             'Marca:': self.marca,
-            'Modelo:' : self.modelo,
+            'Modelo:': self.modelo,
             'Garantia:': f'{self.garantia} meses',
-            'Capacidade:' : f'{capacidade} {unidade_capacidade}',
-            'Interface:' : self.interface,
-            'RPM:' : self.rpm,
-            'Formato:' : f'{self.formato / 10:.1f}"',
-            'Cache:' : f'{self.cache} MB'
+            'Capacidade:': f'{capacidade} {unidade_capacidade}',
+            'Interface:': self.interface,
+            'RPM:': self.rpm,
+            'Formato:': f'{self.formato / 10:.1f}"',
+            'Cache:': f'{self.cache} MB'
         }
 
 
@@ -93,3 +97,28 @@ class ImagensProdutos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     caminho = db.Column(db.String(300))
     produto_id = db.Column(db.Integer, db.ForeignKey('produtos.id'))
+
+
+class Usuarios(UserMixin, db.Model):
+    __tablename__ = 'usuarios'
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(200), unique=True, nullable=False)
+    __senha = db.Column(db.String(128), nullable=False)
+    admin = db.Column(db.Boolean, default=False, nullable=False)
+
+    @property
+    def senha(self):
+        return self.__senha
+
+    @senha.setter
+    def senha(self, senha):
+        self.__senha = generate_password_hash(senha)
+
+    def verifica_senha(self, senha):
+        return check_password_hash(self.senha, senha)
+
+
+@login.user_loader
+def load_user(id):
+    return Usuarios.query.get(int(id))

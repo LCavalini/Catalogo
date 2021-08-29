@@ -1,6 +1,9 @@
-from flask.app import Flask
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
+from wtforms.fields.core import BooleanField
+from wtforms.fields.simple import PasswordField
+from wtforms.validators import DataRequired
+
 
 class ProdutosForm(FlaskForm):
     nome = StringField('Nome: ')
@@ -30,3 +33,10 @@ class HDsForm(ProdutosForm):
     rpm = StringField('RPM: ')
     formato = StringField('Formato: ')
     cache = StringField('Cache: ')
+
+
+class LoginForm(FlaskForm):
+    nome = StringField('Nome de usuário: ', validators=[DataRequired()])
+    senha = PasswordField('Senha: ', validators=[DataRequired()])
+    lembrar_me = BooleanField('Lembrar-me ')
+    enviar = SubmitField('Entrar')

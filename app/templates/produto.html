@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-{% block titulo %}
+{% block title %}
     {{ nome }}
 {% endblock %}
-{% block conteudo %}
+{% block content %}
     <h1>{{ nome }}</h1>
-    <a href="/admin/editar/{{ id }}">Editar</a> |
-    <a href="/admin/remover/{{ id }}">Remover</a>
+    {% if current_user.is_authenticated %}
+        <a href="/admin/editar/{{ id }}">Editar</a> |
+        <a href="/admin/remover/{{ id }}">Remover</a>
+    {% endif %}
     {% for imagem in imagens %}
         <img src="{{ imagem }}" width=200>
     {% endfor %}
