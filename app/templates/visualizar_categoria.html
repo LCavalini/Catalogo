@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}
+    Cadastrar Produtos
+{% endblock %}
+{% block content %}
+    <div class="container mx-2 py-3">
+        <div class="row">
+            {% for item in itens %}
+            <div class="col col-md-4 px-2 py-3">
+                <div class="card text-light" style="width: 18rem; background-color: black;">
+                    {% if item.imagens %}
+                        <img src="/static/imagens/{{ item.imagens[0].caminho }}" width="100px"><br>
+                    {% endif %}
+                    <p class="card-title">{{ item.nome }}</h5>
+                    <p class="card-text"></p>Preço: {{ item.preco }}
+                    <a class="btn btn-danger" href="/{{ item.id }}">Detalhes</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

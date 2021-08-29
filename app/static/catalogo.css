@@ -1,13 +1,4 @@
-h1 {
-    color: blue
-}
-
-textarea#tecnologias {
-    width: 15em;
-    height: 10em;
-    resize: none
-}
-
-input.campo_string_padrao {
-    width: 15em
+body {
+    background-color: black;
+    color: white;
 }

@@ -1,12 +1,48 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-    <head>
-        <meta charset="utf-8">
-        <link href="/static/catalogo.css" rel="stylesheet">
-        <title>{% block titulo %}{% endblock %}</title>
-    </head>
-    <body>
-        {% block conteudo %}{% endblock %}
-        <script src="/static/catalogo.js"></script>
-    </body>
-</html>
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+    Mr. Robot - Produtos de Informática
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="/static/catalogo.css">
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Mr. Robot</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarLinks" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarLinks">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Página Inicial</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/produtos/processadores">Processadores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/produtos/hds">Discos rígidos</a>
+                    </li>
+                    {% if current_user.is_anonymous %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Área interna</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ current_user.nome }}
+                        </a>
+                        <ul class="dropdown-menu bg-dark" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="nav-link" href="/logout">Sair</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
